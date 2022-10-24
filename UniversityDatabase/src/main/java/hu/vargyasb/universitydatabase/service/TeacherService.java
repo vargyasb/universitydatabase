@@ -17,4 +17,9 @@ public class TeacherService {
 	public Teacher save(Teacher teacher) {
 		return teacherRepository.save(teacher);
 	}
+	
+	@Transactional
+	public void delete(int id) {
+		teacherRepository.deleteById(id);
+	}
 }

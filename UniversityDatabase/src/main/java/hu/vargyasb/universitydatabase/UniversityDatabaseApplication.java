@@ -3,12 +3,14 @@ package hu.vargyasb.universitydatabase;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
 import hu.vargyasb.universitydatabase.service.InitDbService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @SpringBootApplication
+@EnableCaching
 public class UniversityDatabaseApplication implements CommandLineRunner{
 	
 	private final InitDbService initDbService;
@@ -20,6 +22,7 @@ public class UniversityDatabaseApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		initDbService.deleteDb();
+		initDbService.deleteAudTables();
 		initDbService.insertInitData();
 	}
 

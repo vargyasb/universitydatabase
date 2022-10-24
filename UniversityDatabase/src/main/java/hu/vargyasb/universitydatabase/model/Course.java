@@ -10,6 +10,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 
+import org.hibernate.envers.Audited;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -30,6 +32,7 @@ import lombok.Setter;
 @NamedEntityGraph(
 		name = "Course.teachers",
 		attributeNodes = @NamedAttributeNode("teachers"))
+@Audited
 public class Course {
 
 	@Id

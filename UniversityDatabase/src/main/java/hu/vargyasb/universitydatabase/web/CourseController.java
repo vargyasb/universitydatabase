@@ -1,11 +1,14 @@
 package hu.vargyasb.universitydatabase.web;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.SortDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +26,7 @@ import com.querydsl.core.types.Predicate;
 import hu.vargyasb.universitydatabase.dto.CourseDto;
 import hu.vargyasb.universitydatabase.mapper.CourseMapper;
 import hu.vargyasb.universitydatabase.model.Course;
+import hu.vargyasb.universitydatabase.model.HistoryData;
 import hu.vargyasb.universitydatabase.repository.CourseRepository;
 import hu.vargyasb.universitydatabase.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +86,40 @@ public class CourseController {
 		//Iterable<Course> courses = courseService.findCourses(predicate, pageable);
 
 		return isFull ? courseMapper.coursesToDtos(courses) : courseMapper.courseSummariesToDtos(courses);
+	}
+	
+	@GetMapping("/{id}/history")
+	public List<HistoryData<CourseDto>> getCourseHistory(@PathVariable int id) {
+		List<HistoryData<CourseDto>> courseDtoWithHistory = new ArrayList<>();
+		List<HistoryData<Course>> courses = courseService.getCourseHistory(id);
+		
+		courses.forEach(hd ->{
+			courseDtoWithHistory.add(new HistoryData<>(
+					courseMapper.courseToDto(hd.getData()),
+					hd.getRevType(),
+					hd.getRevision(),
+					hd.getDate()
+					));
+		});
+		
+		return courseDtoWithHistory;
+	}
+	
+	@GetMapping("/{id}/statusAt/{date}")
+	public HistoryData<CourseDto> getCourseStatusAt(@PathVariable int id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+		HistoryData<Course> course = courseService.getCourseStatusAt(id, date);
+		
+		if (course == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		} 
+		
+		HistoryData<CourseDto> courseDto = new HistoryData<>(
+				courseMapper.courseToDto(course.getData()),
+				course.getRevType(),
+				course.getRevision(),
+				course.getDate());
+		
+		return courseDto;
 	}
 
 }

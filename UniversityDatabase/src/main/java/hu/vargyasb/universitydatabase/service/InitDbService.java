@@ -2,6 +2,7 @@ package hu.vargyasb.universitydatabase.service;
 
 import java.util.HashSet;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +22,22 @@ public class InitDbService {
 	private final TeacherRepository teacherRepository;
 	private final StudentRepository studentRepository;
 	
+	private final JdbcTemplate jdbcTemplate;
+	
 	@Transactional
 	public void deleteDb() {
 		courseRepository.deleteAll();
 		teacherRepository.deleteAll();
 		studentRepository.deleteAll();
+	}
+	
+	@Transactional
+	public void deleteAudTables() {
+		jdbcTemplate.update("DELETE FROM course_aud");
+		jdbcTemplate.update("DELETE FROM course_teachers_aud");
+		jdbcTemplate.update("DELETE FROM course_students_aud");
+		jdbcTemplate.update("DELETE FROM teacher_aud");
+		jdbcTemplate.update("DELETE FROM student_aud");
 	}
 	
 	@Transactional
@@ -35,10 +47,10 @@ public class InitDbService {
 		Teacher teacher3 = teacherRepository.save(Teacher.builder().name("Oktató3").courses(new HashSet<>()).build());
 		Teacher teacher4 = teacherRepository.save(Teacher.builder().name("Oktató4").courses(new HashSet<>()).build());
 		
-		Student student1 = studentRepository.save(Student.builder().name("Tanuló1").courses(new HashSet<>()).build());
-		Student student2 = studentRepository.save(Student.builder().name("Tanuló2").courses(new HashSet<>()).build());
-		Student student3 = studentRepository.save(Student.builder().name("Tanuló3").courses(new HashSet<>()).build());
-		Student student4 = studentRepository.save(Student.builder().name("Tanuló4").courses(new HashSet<>()).build());
+		Student student1 = studentRepository.save(Student.builder().name("Tanuló1").courses(new HashSet<>()).externalId(90001).semester(5).build());
+		Student student2 = studentRepository.save(Student.builder().name("Tanuló2").courses(new HashSet<>()).externalId(90002).semester(6).build());
+		Student student3 = studentRepository.save(Student.builder().name("Tanuló3").courses(new HashSet<>()).externalId(90003).semester(3).build());
+		Student student4 = studentRepository.save(Student.builder().name("Tanuló4").courses(new HashSet<>()).externalId(90004).semester(1).build());
 		
 		Course course1 = courseRepository.save(Course.builder().name("Kurzus1").students(new HashSet<>()).teachers(new HashSet<>()).build());
 		course1.addStudent(student1);
