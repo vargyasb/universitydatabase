@@ -16,7 +16,8 @@ public class StudentService {
 	private final StudentRepository studentRepository;
 	private final ExternalMockSystemService externalMockSystemService;
 
-	@Scheduled(cron = "*/10 * * * * *")
+//	@Scheduled(cron = "*/10 * * * * *")
+//	@Scheduled(cron = "${universitydatabase.updateFreeSemesters.cron}")
 	public void updateFreeSemesters() {
 		System.out.println("updateFreeSemesters called");
 		studentRepository.findAll().forEach(s -> {

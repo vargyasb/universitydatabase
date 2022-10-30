@@ -118,12 +118,13 @@ public class CourseService {
 							revisionEntity.getRevisionDate());
 				}).toList();
 	}
-
+/*
 	@Transactional
 	@SuppressWarnings({ "unchecked" })
 	public HistoryData<Course> getCourseStatusAt(int id, LocalDateTime date) {
 //		Date dateFromLocalDT = Date.from(date.atZone(ZoneId.systemDefault()).toInstant());
 		long tsl = Timestamp.valueOf(date).getTime();
+		
 		Object obj = AuditReaderFactory.get(em)
 				.createQuery()
 				.forRevisionsOfEntity(Course.class, false, true)
@@ -154,5 +155,29 @@ public class CourseService {
 			return null;
 		}
 	}
-
+*/
+	
+	@Transactional
+	@SuppressWarnings({"rawtypes"})
+	public Course getCourseStatusAt(int id, LocalDateTime date) {
+		long tsl = Timestamp.valueOf(date).getTime();
+		
+		List resultList = AuditReaderFactory.get(em)
+				.createQuery()
+				.forRevisionsOfEntity(Course.class, true, false)
+				.add(AuditEntity.property("id").eq(id))
+				.add(AuditEntity.revisionProperty("timestamp").le(tsl))
+				.addOrder(AuditEntity.revisionProperty("timestamp").desc())
+				.setMaxResults(1)
+				.getResultList();
+		
+		if (!resultList.isEmpty()) {
+			Course course = (Course) resultList.get(0);
+			course.getStudents().size();
+			course.getTeachers().size();
+			return course;
+		}
+		
+		return null;
+	}
 }

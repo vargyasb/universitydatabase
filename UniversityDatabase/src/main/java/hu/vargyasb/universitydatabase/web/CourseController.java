@@ -106,20 +106,14 @@ public class CourseController {
 	}
 	
 	@GetMapping("/{id}/statusAt/{date}")
-	public HistoryData<CourseDto> getCourseStatusAt(@PathVariable int id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-		HistoryData<Course> course = courseService.getCourseStatusAt(id, date);
+	public CourseDto getCourseStatusAt(@PathVariable int id, @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
+		Course course = courseService.getCourseStatusAt(id, date);
 		
 		if (course == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		} 
 		
-		HistoryData<CourseDto> courseDto = new HistoryData<>(
-				courseMapper.courseToDto(course.getData()),
-				course.getRevType(),
-				course.getRevision(),
-				course.getDate());
-		
-		return courseDto;
+		return courseMapper.courseToDto(course);
 	}
 
 }
