@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 
-import hu.vargyasb.universitydatabase.dto.TeacherDto;
+import hu.vargyasb.universitydatabase.api.model.TeacherDto;
 import hu.vargyasb.universitydatabase.model.Teacher;
 
 @Mapper(componentModel = "spring")

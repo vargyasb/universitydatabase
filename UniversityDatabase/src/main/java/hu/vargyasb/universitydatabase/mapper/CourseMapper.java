@@ -7,10 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import hu.vargyasb.universitydatabase.dto.CourseDto;
-import hu.vargyasb.universitydatabase.dto.StudentDto;
+import hu.vargyasb.universitydatabase.api.model.CourseDto;
 import hu.vargyasb.universitydatabase.model.Course;
-import hu.vargyasb.universitydatabase.model.Student;
 
 @Mapper(componentModel = "spring")
 public interface CourseMapper {

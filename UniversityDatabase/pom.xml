@@ -95,6 +95,7 @@
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
@@ -116,6 +117,21 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/io.swagger/swagger-annotations -->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.openapitools/jackson-databind-nullable -->
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>0.2.2</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>
@@ -165,6 +181,32 @@
 						<configuration>
 							<outputDirectory>target/generated-sources/java</outputDirectory>
 							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<!-- RELEASE_VERSION -->
+				<version>5.3.1</version>
+				<!-- /RELEASE_VERSION -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/openapi/universitydatabase-openapi.yml</inputSpec>
+							<generatorName>spring</generatorName>
+							<configOptions>
+								<useTags>true</useTags>
+								<dateLibrary>java8-localdatetime</dateLibrary>
+								<configPackage>hu.vargyasb.universitydatabase.api.config</configPackage>
+								<interfaceOnly>true</interfaceOnly>
+							</configOptions>
+							<apiPackage>hu.vargyasb.universitydatabase.api</apiPackage>
+							<modelPackage>hu.vargyasb.universitydatabase.api.model</modelPackage>
 						</configuration>
 					</execution>
 				</executions>

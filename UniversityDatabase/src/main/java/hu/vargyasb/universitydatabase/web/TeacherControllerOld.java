@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import hu.vargyasb.universitydatabase.dto.TeacherDto;
+import hu.vargyasb.universitydatabase.api.model.TeacherDto;
 import hu.vargyasb.universitydatabase.mapper.TeacherMapper;
 import hu.vargyasb.universitydatabase.repository.TeacherRepository;
 import hu.vargyasb.universitydatabase.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("api/teachers")
-public class TeacherController {
+//@RestController
+//@RequestMapping("api/teachers")
+public class TeacherControllerOld {
 
 	private final TeacherMapper teacherMapper;
 	private final TeacherRepository teacherRepository;

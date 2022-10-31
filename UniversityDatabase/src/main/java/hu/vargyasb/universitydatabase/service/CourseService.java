@@ -81,7 +81,7 @@ public class CourseService {
 		BooleanExpression inPredicate = QCourse.course.in(coursePage.getContent());
 		List<Course> courses = courseRepository.findAll(inPredicate, "Course.students", EntityGraphType.LOAD,
 				Sort.unsorted());
-		courses = courses = courseRepository.findAll(inPredicate, "Course.teachers", EntityGraphType.LOAD,
+		courses = courseRepository.findAll(inPredicate, "Course.teachers", EntityGraphType.LOAD,
 				pageable.getSort());
 		return courses;
 	}

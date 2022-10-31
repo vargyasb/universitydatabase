@@ -1,31 +1,53 @@
 package hu.vargyasb.universitydatabase.web;
 
-import java.util.Optional;
+import java.io.IOException;
+import java.util.List;
+
+import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import hu.vargyasb.universitydatabase.dto.StudentDto;
+import hu.vargyasb.universitydatabase.api.StudentControllerApi;
+import hu.vargyasb.universitydatabase.api.model.StudentDto;
 import hu.vargyasb.universitydatabase.mapper.StudentMapper;
-import hu.vargyasb.universitydatabase.model.Student;
 import hu.vargyasb.universitydatabase.repository.StudentRepository;
+import hu.vargyasb.universitydatabase.service.StudentService;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/students")
-public class StudentController {
-
+@RequiredArgsConstructor
+public class StudentController implements StudentControllerApi {
+	
 	private final StudentMapper studentMapper;
 	private final StudentRepository studentRepository;
-
-	@GetMapping("/{id}")
-	public StudentDto getById(@PathVariable int id) {
-		return studentMapper.studentToDto(
-				studentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
+	private final StudentService studentService;
+	
+	@Override
+	public ResponseEntity<List<StudentDto>> getAllStudents() {
+		return ResponseEntity.ok(studentMapper.studentsToDtos(studentRepository.findAll()));
 	}
+	
+	@Override
+	public ResponseEntity<StudentDto> getStudentById(Integer id) {
+		return ResponseEntity.ok(studentMapper.studentToDto(
+				studentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))));
+	}
+
+	@Override
+	public ResponseEntity<String> uploadImageForStudent(Integer id, @Valid String fileName,
+			@Valid MultipartFile content) {
+		try {
+			studentService.savePictureForStudent(id, fileName, content.getInputStream());
+			return ResponseEntity.ok("/api/images/" + id);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+	}
+
 }
