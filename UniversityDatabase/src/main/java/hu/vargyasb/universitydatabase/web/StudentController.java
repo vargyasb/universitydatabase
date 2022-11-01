@@ -41,13 +41,18 @@ public class StudentController implements StudentControllerApi {
 	public ResponseEntity<String> uploadImageForStudent(Integer id, @Valid String fileName,
 			@Valid MultipartFile content) {
 		try {
-			studentService.savePictureForStudent(id, fileName, content.getInputStream());
+			studentService.savePictureForStudent(id, content.getInputStream());
 			return ResponseEntity.ok("/api/images/" + id);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		
+	}
+
+	@Override
+	public ResponseEntity<Void> deleteImageForStudent(Integer id) {
+		studentService.deletePictureForStudent(id);
+		return ResponseEntity.ok().build();
 	}
 
 }

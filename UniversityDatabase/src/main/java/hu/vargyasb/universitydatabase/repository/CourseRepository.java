@@ -1,14 +1,17 @@
 package hu.vargyasb.universitydatabase.repository;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 
 import hu.vargyasb.universitydatabase.model.Course;
+import hu.vargyasb.universitydatabase.model.CourseStatistics;
 import hu.vargyasb.universitydatabase.model.QCourse;
 
 public interface CourseRepository extends JpaRepository<Course, Integer>, QuerydslPredicateExecutor<Course>,
@@ -32,5 +35,10 @@ public interface CourseRepository extends JpaRepository<Course, Integer>, Queryd
 			return Optional.of(path.between(from, to));
 		});
 	}
+
+	@Query("SELECT c.id as courseId, c.name as courseName, AVG(s.semester) as averageSemesterOfStudents "
+			+ "FROM Course c LEFT JOIN c.students s "
+			+ "GROUP BY c")
+	List<CourseStatistics> getAverageSemestersByCourses();
 
 }

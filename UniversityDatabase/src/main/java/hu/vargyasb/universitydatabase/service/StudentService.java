@@ -24,10 +24,12 @@ public class StudentService {
 	private final StudentRepository studentRepository;
 	private final ExternalMockSystemService externalMockSystemService;
 	
+	private static final String pathOfImages = "/Users/vargyasb/Pictures/testimages";
+	
 	@PostConstruct
 	public void init() {
 		try {
-			Files.createDirectories(Path.of("/Users/vargyasb/Pictures/testimages"));
+			Files.createDirectories(Path.of(pathOfImages));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -48,12 +50,12 @@ public class StudentService {
 		});
 	}
 	
-	public void savePictureForStudent(Integer id, String fileName, InputStream stream) {
+	public void savePictureForStudent(Integer id, InputStream stream) {
 		if (!studentRepository.existsById(id)) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 		
-		Path path = Paths.get("/Users/vargyasb/Pictures/testimages", id.toString() + ".jpg");
+		Path path = Paths.get(pathOfImages, id.toString() + ".jpg");
 		
 		try {
 			Files.copy(stream, path, StandardCopyOption.REPLACE_EXISTING);
@@ -63,7 +65,17 @@ public class StudentService {
 		}
 	}
 	
-	private Path getPicturePathForStudent(Integer id) {
-		return Paths.get("/Users/vargyasb/Pictures/testimages", id.toString() + ".jpg");
+	public void deletePictureForStudent(Integer id) {
+		if (!studentRepository.existsById(id)) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+		
+		Path path = Paths.get(pathOfImages, id.toString() + ".jpg");
+		try {
+			Files.deleteIfExists(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 }

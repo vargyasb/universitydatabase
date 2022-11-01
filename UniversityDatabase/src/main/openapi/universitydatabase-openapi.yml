@@ -358,6 +358,14 @@ paths:
                 content:
                   type: string
                   format: binary
+    delete:
+      summary: ''
+      operationId: deleteImageForStudent
+      responses:
+        '200':
+          description: OK
+      tags:
+        - student-controller
   '/api/images/{id}':
     parameters:
       - schema:
