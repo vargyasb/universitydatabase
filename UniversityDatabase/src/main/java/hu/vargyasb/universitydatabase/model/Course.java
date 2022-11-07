@@ -1,6 +1,5 @@
 package hu.vargyasb.universitydatabase.model;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -47,6 +46,9 @@ public class Course {
 	
 	@ManyToMany
 	private Set<Teacher> teachers;
+	
+	@ManyToMany
+	private Set<Schedule> schedules;
 	
 	public void addTeacher(Teacher teacher) {
 		teachers.add(teacher);
