@@ -1,0 +1,1 @@
+alter table student add column balance int default 0;
