@@ -8,8 +8,8 @@ import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.hibernate.envers.Audited;
 
@@ -37,8 +37,5 @@ public class Schedule {
 	private LocalTime time;
 	
 	@ManyToOne
-	private Semester semester;
-	
-	@ManyToMany(mappedBy = "schedules")
-	private Set<Course> courses;
+	private Course course;
 }

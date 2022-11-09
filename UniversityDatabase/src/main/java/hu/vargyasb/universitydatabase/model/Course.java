@@ -6,8 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.OneToMany;
 
 import org.hibernate.envers.Audited;
 
@@ -47,7 +49,7 @@ public class Course {
 	@ManyToMany
 	private Set<Teacher> teachers;
 	
-	@ManyToMany
+	@OneToMany(mappedBy = "course")
 	private Set<Schedule> schedules;
 	
 	public void addTeacher(Teacher teacher) {

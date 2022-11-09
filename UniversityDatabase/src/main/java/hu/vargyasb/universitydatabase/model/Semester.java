@@ -36,7 +36,7 @@ public class Semester {
 	private LocalDate startDate;
 	private int duration;
 	
-	private Set<LocalDate> holidays;
-	
-	private Map<LocalDate, LocalDate> workdaySwap;
+//	private Set<LocalDate> holidays;
+//	
+//	private Map<LocalDate, LocalDate> workdaySwap;
 }

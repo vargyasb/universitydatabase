@@ -10,11 +10,14 @@ import java.nio.file.StandardCopyOption;
 import javax.annotation.PostConstruct;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import hu.vargyasb.universitydatabase.repository.StudentRepository;
+import hu.vargyasb.universitydatabase.wsclient.FreeSemesterXmlWs;
+import hu.vargyasb.universitydatabase.wsclient.FreeSemesterXmlWsImplService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -39,10 +42,12 @@ public class StudentService {
 //	@Scheduled(cron = "*/10 * * * * *")
 //	@Scheduled(cron = "${universitydatabase.updateFreeSemesters.cron}")
 	public void updateFreeSemesters() {
-		System.out.println("updateFreeSemesters called");
+		FreeSemesterXmlWs freeSemesterXmlWsPort = new FreeSemesterXmlWsImplService().getFreeSemesterXmlWsImplPort();
+		System.out.println("StudentService.updateFreeSemesters called");
 		studentRepository.findAll().forEach(s -> {
 			try {
-				s.setUsedFreeSemesters(externalMockSystemService.getUsedFreeSemesters(s.getExternalId()));
+				s.setUsedFreeSemesters(freeSemesterXmlWsPort.getUsedFreeSemesters(s.getExternalId()));
+//				s.setUsedFreeSemesters(externalMockSystemService.getUsedFreeSemesters(s.getExternalId()));
 				studentRepository.save(s);
 			} catch (Exception e) {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);

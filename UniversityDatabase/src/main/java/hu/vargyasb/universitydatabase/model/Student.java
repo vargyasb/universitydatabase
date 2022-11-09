@@ -39,7 +39,7 @@ public class Student {
 	private int semester;
 	
 	private int usedFreeSemesters;
-	private int externalId; 
+	private int externalId;
 	
 	@ManyToMany(mappedBy = "students")
 	private Set<Course> courses;
