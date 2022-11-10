@@ -48,4 +48,10 @@ public class Student {
 	public void addCourse(Course course) {
 		courses.add(course);
 	}
+	
+	public void updateBalance(int deposit) {
+		if (deposit > 0) {
+			this.balance += deposit;
+		}
+	}
 }

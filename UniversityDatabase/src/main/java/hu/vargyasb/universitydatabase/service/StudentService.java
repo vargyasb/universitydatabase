@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+import hu.vargyasb.universitydatabase.model.Student;
 import hu.vargyasb.universitydatabase.repository.StudentRepository;
 import hu.vargyasb.universitydatabase.wsclient.FreeSemesterXmlWs;
 import hu.vargyasb.universitydatabase.wsclient.FreeSemesterXmlWsImplService;
@@ -82,5 +83,11 @@ public class StudentService {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public void updateBalanceForStudent(Integer id, Integer deposit) {
+		Student student = studentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		student.updateBalance(deposit);
+		studentRepository.save(student);
 	}
 }

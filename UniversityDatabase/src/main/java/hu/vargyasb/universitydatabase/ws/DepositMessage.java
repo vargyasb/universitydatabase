@@ -12,4 +12,5 @@ public class DepositMessage {
 	private int studentId;
 	private int deposit;
 	private OffsetDateTime timestamp;
+
 }

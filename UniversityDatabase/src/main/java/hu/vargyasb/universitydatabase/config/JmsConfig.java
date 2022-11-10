@@ -25,7 +25,7 @@ public class JmsConfig {
 		converter.setTypeIdPropertyName("_type");
 		return converter;
 	}
-	/*
+	
 	@Bean
 	public JmsListenerContainerFactory<?> myFactory(ConnectionFactory connectionFactory, DefaultJmsListenerContainerFactoryConfigurer configurer) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -35,5 +35,4 @@ public class JmsConfig {
 		factory.setSubscriptionDurable(true);
 		return factory;
 	}
-	*/
 }
