@@ -14,7 +14,7 @@ public class DepositMessageConsumer {
 
 	private final StudentService studentService;
 	
-	@JmsListener(destination = "deposits", containerFactory = "myFactory")
+//	@JmsListener(destination = "deposits", containerFactory = "myFactory")
 	public void onDepositMessage(DepositMessage depositMessage) {
 //		System.out.println(depositMessage);
 		if (depositMessage != null) {

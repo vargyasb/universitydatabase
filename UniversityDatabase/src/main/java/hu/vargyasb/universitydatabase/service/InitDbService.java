@@ -1,17 +1,21 @@
 package hu.vargyasb.universitydatabase.service;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hu.vargyasb.universitydatabase.model.Course;
 import hu.vargyasb.universitydatabase.model.Student;
 import hu.vargyasb.universitydatabase.model.Teacher;
+import hu.vargyasb.universitydatabase.model.UniversityUser;
 import hu.vargyasb.universitydatabase.repository.CourseRepository;
 import hu.vargyasb.universitydatabase.repository.StudentRepository;
 import hu.vargyasb.universitydatabase.repository.TeacherRepository;
+import hu.vargyasb.universitydatabase.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -21,6 +25,9 @@ public class InitDbService {
 	private final CourseRepository courseRepository;
 	private final TeacherRepository teacherRepository;
 	private final StudentRepository studentRepository;
+	private final UserRepository userRepository;
+	
+	private final PasswordEncoder passwordEncoder;
 	
 	private final JdbcTemplate jdbcTemplate;
 	
@@ -63,5 +70,15 @@ public class InitDbService {
 		course2.addStudent(student4);
 		course2.addTeacher(teacher3);
 		course2.addTeacher(teacher4);
+	}
+	
+	@Transactional
+	public void createUsersIfNeeded() {
+		if (!userRepository.existsById("admin")) {
+			userRepository.save(new UniversityUser("admin", passwordEncoder.encode("pass"), Set.of("admin","user")));
+		}
+		if (!userRepository.existsById("user")) {
+			userRepository.save(new UniversityUser("user", passwordEncoder.encode("pass"), Set.of("user")));
+		}
 	}
 }

@@ -25,6 +25,7 @@ public class UniversityDatabaseApplication implements CommandLineRunner{
 		initDbService.deleteDb();
 		initDbService.deleteAudTables();
 		initDbService.insertInitData();
+		initDbService.createUsersIfNeeded();
 	}
 
 }
