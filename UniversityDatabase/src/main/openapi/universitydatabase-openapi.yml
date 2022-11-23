@@ -402,6 +402,95 @@ paths:
                 items:
                   $ref: '#/components/schemas/StudentDto'
       operationId: getAllStudents
+  /api/timetable:
+    get:
+      summary: Your GET endpoint
+      tags:
+        - timetable-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTableDto'
+      operationId: get-api-timetable
+      parameters:
+        - schema:
+            type: integer
+            format: int32
+          in: query
+          name: studentId
+        - schema:
+            type: integer
+            format: int32
+          in: query
+          name: teacherId
+        - schema:
+            type: string
+            format: date
+          in: query
+          name: from
+        - schema:
+            type: string
+            format: date
+          in: query
+          name: until
+  /api/timetable/search:
+    get:
+      summary: Your GET endpoint
+      tags:
+        - timetable-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeTableItemDto'
+      operationId: searchTimeTable
+      parameters:
+        - schema:
+            type: integer
+            format: int32
+          in: query
+          name: studentId
+        - schema:
+            type: integer
+            format: int32
+          in: query
+          name: teacherId
+        - schema:
+            type: string
+            format: date
+          in: query
+          name: from
+        - schema:
+            type: string
+          in: query
+          name: course
+  '/api/courses/{id}/cancelLesson/{day}':
+    parameters:
+      - schema:
+          type: integer
+          format: int32
+        name: id
+        in: path
+        required: true
+      - schema:
+          type: string
+          format: date
+        name: day
+        in: path
+        required: true
+    put:
+      summary: ''
+      operationId: cancelLesson
+      responses:
+        '200':
+          description: OK
+      tags:
+        - course-controller
 components:
   schemas:
     CourseDto:
@@ -464,3 +553,25 @@ components:
         date:
           type: string
           format: date-time
+    TimeTableDto:
+      title: TimeTableDto
+      x-stoplight:
+        id: tv3k2csddnko4
+      type: array
+      items:
+        $ref: '#/components/schemas/TimeTableItemDto'
+    TimeTableItemDto:
+      title: TimeTableItemDto
+      x-stoplight:
+        id: a0sbkdh1dedea
+      type: object
+      properties:
+        courseName:
+          type: string
+        day:
+          type: string
+          format: date
+        startLesson:
+          type: string
+        endLesson:
+          type: string

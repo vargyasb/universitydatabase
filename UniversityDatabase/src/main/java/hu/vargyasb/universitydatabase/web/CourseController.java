@@ -1,14 +1,13 @@
 package hu.vargyasb.universitydatabase.web;
 
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +17,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.querydsl.QuerydslPredicateArgumentResolver;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.server.ResponseStatusException;
@@ -47,6 +47,8 @@ public class CourseController implements CourseControllerApi {
 	private final NativeWebRequest nativeWebRequest;
 	private final PageableHandlerMethodArgumentResolver pageableResolver;
 	private final QuerydslPredicateArgumentResolver predicateResolver;
+	
+	private final SimpMessagingTemplate simpMessagingTemplate;
 	
 	@Override
 	public Optional<NativeWebRequest> getRequest() {
@@ -101,6 +103,15 @@ public class CourseController implements CourseControllerApi {
 	}
 
 	@Override
+	public ResponseEntity<Void> cancelLesson(Integer id, LocalDate day) {
+		Course course = courseRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		simpMessagingTemplate.convertAndSend("/topic/courseChat/" + course.getId(),
+				System.out.format("A %s kurzus %s napon elmarad.", course.getName(), day));
+		
+		return ResponseEntity.ok().build();
+	}
+	
+	@Override
 	public ResponseEntity<CourseDto> modifyCourse(Integer id, @Valid CourseDto courseDto) {
 		Course course = courseMapper.dtoToCourse(courseDto);
 		course.setId(id);
@@ -154,4 +165,5 @@ public class CourseController implements CourseControllerApi {
 			throw new RuntimeException(e);
 		}
 	}
+
 }

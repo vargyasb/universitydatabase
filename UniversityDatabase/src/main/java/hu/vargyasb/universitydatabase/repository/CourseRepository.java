@@ -41,4 +41,5 @@ public interface CourseRepository extends JpaRepository<Course, Integer>, Queryd
 			+ "GROUP BY c")
 	List<CourseStatistics> getAverageSemestersByCourses();
 
+	List<Course> findByName(String name);
 }

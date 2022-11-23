@@ -9,4 +9,4 @@ alter table course_aud add column semester_type int4 default 0, add column year 
 
 alter table if exists special_day_aud add constraint FKke1jl33xwvveiw7wvsmupf177 foreign key (rev) references revinfo;
 alter table if exists time_table_item_aud add constraint FK3u9r9u0niuxdqsasfa3ccbj55 foreign key (rev) references revinfo;
-alter table if exists time_table_item add constraint FKoncqcs4k7gesjioopos63b40m foreign key (course_id) references course;create sequence hibernate_sequence start 1 increment 1;
+alter table if exists time_table_item add constraint FKoncqcs4k7gesjioopos63b40m foreign key (course_id) references course;

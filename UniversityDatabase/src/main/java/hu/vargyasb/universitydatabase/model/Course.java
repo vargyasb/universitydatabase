@@ -1,12 +1,12 @@
 package hu.vargyasb.universitydatabase.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
@@ -49,8 +49,12 @@ public class Course {
 	@ManyToMany
 	private Set<Teacher> teachers;
 	
+//	@OneToMany(mappedBy = "course")
+//	private Set<Schedule> schedules;
 	@OneToMany(mappedBy = "course")
-	private Set<Schedule> schedules;
+	private Set<TimeTableItem> timeTableItems;
+	
+	private Semester semester;
 	
 	public void addTeacher(Teacher teacher) {
 		teachers.add(teacher);
@@ -60,5 +64,13 @@ public class Course {
 	public void addStudent(Student student) {
 		students.add(student);
 		student.addCourse(this);
+	}
+	
+	public void addTimeTableItem(TimeTableItem timeTableItem) {
+		timeTableItem.setCourse(this);
+		if (this.timeTableItems == null) {
+			this.timeTableItems = new HashSet<>();
+		}
+		this.timeTableItems.add(timeTableItem);
 	}
 }
