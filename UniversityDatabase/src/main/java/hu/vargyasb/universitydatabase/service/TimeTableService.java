@@ -20,6 +20,7 @@ import hu.vargyasb.universitydatabase.model.SpecialDay;
 import hu.vargyasb.universitydatabase.model.TimeTableItem;
 import hu.vargyasb.universitydatabase.repository.SpecialDayRepository;
 import hu.vargyasb.universitydatabase.repository.StudentRepository;
+import hu.vargyasb.universitydatabase.repository.TeacherRepository;
 import hu.vargyasb.universitydatabase.repository.TimeTableItemRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -30,14 +31,14 @@ public class TimeTableService {
 	private final StudentRepository studentRepository;
 	private final TimeTableItemRepository timeTableItemRepository;
 	private final SpecialDayRepository specialDayRepository;
-	
+	private final TeacherRepository teacherRepository;
+
 	@Autowired
 	@Lazy
 	private TimeTableService self;
 
 	@Cacheable("studentTimetableResults")
 	public Map<LocalDate, List<TimeTableItem>> getTimeTableForStudent(int studentId, LocalDate from, LocalDate until) {
-		Map<LocalDate, List<TimeTableItem>> timeTable = new LinkedHashMap<>();
 		Semester semester = Semester.fromMidSemesterDay(from);
 		Semester semesterOfUntil = Semester.fromMidSemesterDay(until);
 		if (!semester.equals(semesterOfUntil)) {
@@ -50,6 +51,66 @@ public class TimeTableService {
 		List<TimeTableItem> relevantTimeTableItems = timeTableItemRepository.findByStudentAndSemester(studentId,
 				semester.getYear(), semester.getSemesterType());
 
+		return timeTableAssembler(from, until, relevantTimeTableItems);
+	}
+	
+	public Map<LocalDate, List<TimeTableItem>> getTimeTableForTeacher(int teacherId, @Valid LocalDate from,
+			@Valid LocalDate until) {
+		Semester semester = Semester.fromMidSemesterDay(from);
+		Semester semesterOfUntil = Semester.fromMidSemesterDay(until);
+		if (!semester.equals(semesterOfUntil)) {
+			throw new IllegalArgumentException("from and until should be in the same semester");
+		}
+
+		if (!teacherRepository.existsById(teacherId)) {
+			throw new IllegalArgumentException("teacher does not exist");
+		}
+		List<TimeTableItem> relevantTimeTableItems = timeTableItemRepository.findByTeacherAndSemester(teacherId,
+				semester.getYear(), semester.getSemesterType());
+
+		return timeTableAssembler(from, until, relevantTimeTableItems);
+	}
+
+
+	public Map.Entry<LocalDate, TimeTableItem> searchTimeTableOfStudent(@Valid Integer studentId, @Valid LocalDate from,
+			@Valid String courseName) {
+		Map.Entry<LocalDate, TimeTableItem> result = null;
+
+		Map<LocalDate, List<TimeTableItem>> timeTableForStudent = self.getTimeTableForStudent(studentId, from,
+				Semester.fromMidSemesterDay(from).getSemesterEnd());
+
+		for (Map.Entry<LocalDate, List<TimeTableItem>> entry : timeTableForStudent.entrySet()) {
+			LocalDate day = entry.getKey();
+			List<TimeTableItem> itemsOnDay = entry.getValue();
+			for (TimeTableItem tti : itemsOnDay) {
+				if (tti.getCourse().getName().toLowerCase().startsWith(courseName.toLowerCase())) {
+					result = Map.entry(day, tti);
+					break;
+				}
+			}
+			if (result != null) {
+				break;
+			}
+		}
+		return result;
+	}
+
+	private Integer getDayOfWeekMovedToThisDay(Map<LocalDate, List<SpecialDay>> specialDaysByTargetDay, LocalDate day) {
+		List<SpecialDay> movedToThisDay = specialDaysByTargetDay.get(day);
+		if (movedToThisDay == null || movedToThisDay.isEmpty()) {
+			return null;
+		}
+		return movedToThisDay.get(0).getSourceDay().getDayOfWeek().getValue();
+	}
+
+	private boolean isDayNotFreeNeitherSwapped(Map<LocalDate, List<SpecialDay>> specialDaysBySourceDay, LocalDate day) {
+		List<SpecialDay> specialDaysOnDay = specialDaysBySourceDay.get(day);
+		return specialDaysOnDay == null || specialDaysOnDay.isEmpty();
+	}
+
+	private Map<LocalDate, List<TimeTableItem>> timeTableAssembler(LocalDate from, LocalDate until,
+			List<TimeTableItem> relevantTimeTableItems) {
+		Map<LocalDate, List<TimeTableItem>> timeTable = new LinkedHashMap<>();
 		Map<Integer, List<TimeTableItem>> timeTableItemsByDayOfWeek = relevantTimeTableItems.stream()
 				.collect(Collectors.groupingBy(TimeTableItem::getDayOfWeek));
 
@@ -81,46 +142,4 @@ public class TimeTableService {
 
 		return timeTable;
 	}
-	
-	public Map.Entry<LocalDate, TimeTableItem> searchTimeTableOfStudent(@Valid Integer studentId, @Valid LocalDate from,
-			@Valid String courseName) {
-		Map.Entry<LocalDate, TimeTableItem> result = null;
-		
-		Map<LocalDate, List<TimeTableItem>> timeTableForStudent = self.getTimeTableForStudent(studentId, from,
-				Semester.fromMidSemesterDay(from).getSemesterEnd());
-		
-		for (Map.Entry<LocalDate, List<TimeTableItem>> entry : timeTableForStudent.entrySet()) {
-			LocalDate day = entry.getKey();
-			List<TimeTableItem> itemsOnDay = entry.getValue();
-			for (TimeTableItem tti : itemsOnDay) {
-				if (tti.getCourse().getName().toLowerCase().startsWith(courseName.toLowerCase())) {
-					result = Map.entry(day, tti);
-					break;
-				}
-			}
-			if (result != null) {
-				break;
-			}
-		}
-		return result;
-	}
-
-	private Integer getDayOfWeekMovedToThisDay(Map<LocalDate, List<SpecialDay>> specialDaysByTargetDay, LocalDate day) {
-		List<SpecialDay> movedToThisDay = specialDaysByTargetDay.get(day);
-		if (movedToThisDay == null || movedToThisDay.isEmpty()) {
-			return null;
-		}
-		return movedToThisDay.get(0).getSourceDay().getDayOfWeek().getValue();
-	}
-
-	private boolean isDayNotFreeNeitherSwapped(Map<LocalDate, List<SpecialDay>> specialDaysBySourceDay, LocalDate day) {
-		List<SpecialDay> specialDaysOnDay = specialDaysBySourceDay.get(day);
-		return specialDaysOnDay == null || specialDaysOnDay.isEmpty();
-	}
-
-	public Map<LocalDate, List<TimeTableItem>> getTimeTableForTeacher(@Valid Integer teacherId, @Valid LocalDate from,
-			@Valid LocalDate until) {
-		return null;
-	}
-
 }

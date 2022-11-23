@@ -16,4 +16,10 @@ public interface TimeTableItemRepository extends JpaRepository<TimeTableItem, In
 			+ ")")
 	public List<TimeTableItem> findByStudentAndSemester(int studentId, int year, SemesterType semesterType);
 
+	@Query("SELECT t FROM TimeTableItem t WHERE t.course IN ("
+			+ "SELECT c FROM Course c JOIN c.teachers s "
+			+ "WHERE s.id=:teacherId AND c.semester.year = :year AND c.semester.semesterType = :semesterType"
+			+ ")")
+	public List<TimeTableItem> findByTeacherAndSemester(int teacherId, int year, SemesterType semesterType);
+
 }
