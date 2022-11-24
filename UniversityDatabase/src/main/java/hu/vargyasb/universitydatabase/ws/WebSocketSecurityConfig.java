@@ -10,8 +10,13 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
 	@Override
 	protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
 		
-		messages.simpSubscribeDestMatchers("/topic/courseChat/*").hasAnyAuthority("admin", "user");
+		messages.simpSubscribeDestMatchers("/topic/courseChat/{courseId}")
+		.access("@courseChatGuard.checkCourseId(authentication, #courseId)");
 	}
-	
+
+	@Override
+	protected boolean sameOriginDisabled() {
+		return true;
+	}
 	
 }

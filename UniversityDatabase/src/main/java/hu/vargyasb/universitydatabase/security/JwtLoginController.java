@@ -1,5 +1,6 @@
 package hu.vargyasb.universitydatabase.security;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,11 +21,23 @@ public class JwtLoginController {
 	@Autowired
 	JwtService jwtService;
 	
+	@Autowired
+	FacebookLoginService facebookLoginService;
+	
 	@PostMapping("api/login")
 	public String login(@RequestBody LoginDto loginDto) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 		
-		return jwtService.createJwtToken((UserDetails)authentication.getPrincipal()); 
+		UserDetails userDetails = null;
+		String fbToken = loginDto.getFbToken();
+		if (ObjectUtils.isEmpty(fbToken)) {
+			
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+			userDetails = (UserDetails) authentication.getPrincipal();
+		} else {
+			facebookLoginService.getUserDetailsForToken(fbToken);
+		}
+		
+		return jwtService.createJwtToken(userDetails); 
 	}
 }

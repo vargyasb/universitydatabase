@@ -17,14 +17,19 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 @Service
 public class JwtService {
 
+	private static final String COURSE_IDS = "courseIds";
 	private static final Algorithm ALG = Algorithm.HMAC256("mysecret");
-	private static final String ISSUER = "AiportApp";
+	private static final String ISSUER = "UniversityApp";
 	private static final String AUTH = "auth";
 
 	public String createJwtToken(UserDetails principal) {
-		return JWT.create().withSubject(principal.getUsername())
+		UserInfo userInfo = (UserInfo) principal;
+		
+		return JWT.create()
+				.withSubject(principal.getUsername())
 				.withArrayClaim(AUTH,
 						principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toArray(String[]::new))
+				.withArrayClaim(COURSE_IDS, userInfo.getCourseIds().stream().toArray(Integer[]::new))
 				.withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(2)))
 				.withIssuer(ISSUER)
 				.sign(ALG);
@@ -35,11 +40,11 @@ public class JwtService {
 			.withIssuer(ISSUER)
 			.build()
 			.verify(jwtToken);
-		return new User(decodedJwt.getSubject(), "dummy", 
+		return new UserInfo(decodedJwt.getSubject(), "dummy", 
 				decodedJwt.getClaim(AUTH)
 					.asList(String.class)
-					.stream()
-					.map(SimpleGrantedAuthority::new)
-					.collect(Collectors.toList()));
+					.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()),
+					decodedJwt.getClaim(COURSE_IDS).asList(Integer.class)
+					);
 	}
 }

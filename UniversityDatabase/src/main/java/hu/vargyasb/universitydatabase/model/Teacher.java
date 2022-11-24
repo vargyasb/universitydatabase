@@ -12,30 +12,28 @@ import javax.persistence.ManyToMany;
 import org.hibernate.envers.Audited;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@SuperBuilder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
 @Cacheable
 @Audited
-public class Teacher {
-
-	@Id
-	@GeneratedValue
-	@EqualsAndHashCode.Include()
-	private int id;
-	
-	private String name;
-	private LocalDate birthdate;
+public class Teacher extends UniversityUser {
+//
+//	@Id
+//	@GeneratedValue
+//	@EqualsAndHashCode.Include()
+//	private int id;
+//	
+//	private String name;
+//	private LocalDate birthdate;
 	
 	@ManyToMany(mappedBy = "teachers")
 	private Set<Course> courses;
@@ -43,4 +41,10 @@ public class Teacher {
 	public void addCourse(Course course) {
 		courses.add(course);
 	}
+
+	@Override
+	public UserType getUserType() {
+		return UserType.TEACHER;
+	}
+	
 }

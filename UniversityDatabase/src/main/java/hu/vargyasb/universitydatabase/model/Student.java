@@ -1,41 +1,38 @@
 package hu.vargyasb.universitydatabase.model;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
 import org.hibernate.envers.Audited;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@SuperBuilder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
 @Cacheable
 @Audited
-public class Student {
+@ToString(onlyExplicitlyIncluded = true)
+public class Student extends UniversityUser {
 
-	@Id
-	@GeneratedValue
-	@EqualsAndHashCode.Include()
-	private int id;
-	
-	private String name;
-	private LocalDate birthdate;
+//	@Id
+//	@GeneratedValue
+//	@EqualsAndHashCode.Include()
+//	private int id;
+//	
+//	private String name;
+//	private LocalDate birthdate;
 	private int semester;
 	
 	private int usedFreeSemesters;
@@ -54,4 +51,10 @@ public class Student {
 			this.balance += deposit;
 		}
 	}
+
+	@Override
+	public UserType getUserType() {
+		return UserType.STUDENT;
+	}
+	
 }
