@@ -10,7 +10,7 @@ import hu.vargyasb.universitydatabase.model.SpecialDay;
 
 public interface SpecialDayRepository extends JpaRepository<SpecialDay, Integer>{
 
-	@Query("SELECT s FROM SpecialDay s WHERE s.sourceDay BETWEEN :from and :until OR s.targetDay BETWEEN :fron and :until")
+	@Query("SELECT s FROM SpecialDay s WHERE s.sourceDay BETWEEN :from and :until OR s.targetDay BETWEEN :from and :until")
 	List<SpecialDay> findBySourceDayOrTargetDay(LocalDate from, LocalDate until);
 
 }

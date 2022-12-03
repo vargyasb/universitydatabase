@@ -39,7 +39,8 @@ public class FacebookLoginService {
 			return userRepository
 					.save(Student.builder()
 							.facebookId(fbId)
-							.username(fbData.getEmail()).password("dummy")
+							.username(fbData.getEmail())
+							.password("dummy")
 							.build());
 		}
 		return optionalUser.get();

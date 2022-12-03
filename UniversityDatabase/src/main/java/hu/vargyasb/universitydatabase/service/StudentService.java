@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -41,20 +42,30 @@ public class StudentService {
 	}
 
 //	@Scheduled(cron = "*/10 * * * * *")
-//	@Scheduled(cron = "${universitydatabase.updateFreeSemesters.cron}")
+	@Scheduled(cron = "${universitydatabase.updateFreeSemesters.cron}")
 	public void updateFreeSemesters() {
-		FreeSemesterXmlWs freeSemesterXmlWsPort = new FreeSemesterXmlWsImplService().getFreeSemesterXmlWsImplPort();
+		//FreeSemesterXmlWs freeSemesterXmlWsPort = new FreeSemesterXmlWsImplService().getFreeSemesterXmlWsImplPort();
 		System.out.println("StudentService.updateFreeSemesters called");
 		studentRepository.findAll().forEach(s -> {
 			try {
-				s.setUsedFreeSemesters(freeSemesterXmlWsPort.getUsedFreeSemesters(s.getExternalId()));
-//				s.setUsedFreeSemesters(externalMockSystemService.getUsedFreeSemesters(s.getExternalId()));
-				studentRepository.save(s);
+				Integer externalId = s.getExternalId();
+				if (externalId != null) {
+					//1. verzio: belso mockolt External System Service
+//					s.setUsedFreeSemesters(externalMockSystemService.getUsedFreeSemesters(s.getExternalId()));
+					
+					//2. verzio: szinkron XML-WS hivas
+//					s.setUsedFreeSemesters(freeSemesterXmlWsPort.getUsedFreeSemesters(s.getExternalId()));
+//					studentRepository.save(s);
+					
+					//3.verzio: aszinkron JMS uzenet
+					externalMockSystemService.askNumFreeSemestersForStudent(externalId);
+				}
 			} catch (Exception e) {
 				throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 			} 
 		});
 	}
+
 	
 	public void savePictureForStudent(Integer id, InputStream stream) {
 		if (!studentRepository.existsById(id)) {
@@ -89,5 +100,11 @@ public class StudentService {
 		Student student = studentRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 		student.updateBalance(deposit);
 		studentRepository.save(student);
+	}
+
+	public void updateFreeSemesterForStudent(int externalStudentId, int numberOfUsedFreeSemesters) {
+		System.out.println("In StudentService.updateFreeSemesterForStudent");
+		studentRepository.findByExternalId(externalStudentId)
+			.ifPresent(s -> s.setUsedFreeSemesters(numberOfUsedFreeSemesters));
 	}
 }
