@@ -24,18 +24,24 @@ public class JwtLoginController {
 	@Autowired
 	FacebookLoginService facebookLoginService;
 	
+	@Autowired
+	GoogleLoginService googleLoginService;
+	
 	@PostMapping("api/login")
 	public String login(@RequestBody LoginDto loginDto) {
 		
 		UserDetails userDetails = null;
 		String fbToken = loginDto.getFbToken();
-		if (ObjectUtils.isEmpty(fbToken)) {
+		String googleToken = loginDto.getGoogleToken();
+		if (ObjectUtils.isEmpty(fbToken) && ObjectUtils.isEmpty(googleToken)) {
 			
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 			userDetails = (UserDetails) authentication.getPrincipal();
-		} else {
+		} else if (ObjectUtils.isEmpty(googleToken)) {
 			facebookLoginService.getUserDetailsForToken(fbToken);
+		} else {
+			googleLoginService.getUserDetailsForToken(googleToken);
 		}
 		
 		return jwtService.createJwtToken(userDetails); 
