@@ -33,15 +33,14 @@ public class JwtLoginController {
 		UserDetails userDetails = null;
 		String fbToken = loginDto.getFbToken();
 		String googleToken = loginDto.getGoogleToken();
-		if (ObjectUtils.isEmpty(fbToken) && ObjectUtils.isEmpty(googleToken)) {
-			
+		if (!ObjectUtils.isEmpty(fbToken)) {
+			facebookLoginService.getUserDetailsForToken(fbToken);
+		} else if (!ObjectUtils.isEmpty(googleToken)) {
+			googleLoginService.getUserDetailsForToken(googleToken);
+		} else {
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
 			userDetails = (UserDetails) authentication.getPrincipal();
-		} else if (ObjectUtils.isEmpty(googleToken)) {
-			facebookLoginService.getUserDetailsForToken(fbToken);
-		} else {
-			googleLoginService.getUserDetailsForToken(googleToken);
 		}
 		
 		return jwtService.createJwtToken(userDetails); 
